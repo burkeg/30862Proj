@@ -41,6 +41,7 @@ public class GameManager extends GameCore {
 	private InputManager inputManager;
 	private TileMapRenderer renderer;
 	private long healthTimer = 0;
+	private long bulletTimer = 0;
 	private GameAction moveLeft;
 	private GameAction moveRight;
 	private GameAction jump;
@@ -91,7 +92,7 @@ public class GameManager extends GameCore {
 		moveRight = new GameAction("moveRight");
 		jump = new GameAction("jump", GameAction.DETECT_INITAL_PRESS_ONLY);
 		exit = new GameAction("exit", GameAction.DETECT_INITAL_PRESS_ONLY);
-		shoot = new GameAction("shoot", GameAction.DETECT_INITAL_PRESS_ONLY);
+		shoot = new GameAction("shoot");
 
 		inputManager = new InputManager(screen.getFullScreenWindow());
 		inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
@@ -119,7 +120,7 @@ public class GameManager extends GameCore {
 		if(player.getVelocityX()==0 && player.getVelocityY() == 0 && healthTimer == 0) {
 			healthTimer = GameCore.timeElapsed;
 		}
-		//System.out.println("timeElapse: " + GameCore.timeElapsed + " healthTimer: "+healthTimer);
+		
 		if(GameCore.timeElapsed - healthTimer > 1000 && healthTimer !=0) {
 			map.getPlayer().incrementHealth(5);
 			healthTimer = 0;
@@ -146,17 +147,24 @@ public class GameManager extends GameCore {
 				player.jump(false);
 			}
 			if (shoot.isPressed()) {
-				if (player.canShoot()) {
-					//map.getPlayer().setHealth(25);
-					System.out.println("attemping to make shot sprite");
-					Sprite projectileSprite = resourceManager
-							.newProjectileSprite();
-					projectileSprite.setX((int) player.getX());
-					projectileSprite.setY((int) player.getY());
-					projectileSprite.setVelocityX(player.getMaxSpeed()*player.getOrientation());
-					map.addSprite(projectileSprite);
-					// resourceManager.addSprite(map,
-					// resourceManager.newProjectileSprite(),(int)player.getX(),(int)player.getY());
+				if (player.getBullets() > 0) {
+					System.out.println("timeElapse: " + GameCore.timeElapsed + " bulletTimer: "+bulletTimer);
+					System.out.println("Differece: " + (GameCore.timeElapsed-bulletTimer));
+					if(GameCore.timeElapsed - bulletTimer > 150 || bulletTimer == 0){
+						Sprite projectileSprite = resourceManager.newProjectileSprite();
+						projectileSprite.setX((int) player.getX());
+						projectileSprite.setY((int) player.getY());
+						projectileSprite.setVelocityX(player.getMaxSpeed()*player.getOrientation());
+						map.addSprite(projectileSprite);
+						player.decBullets(1);
+						bulletTimer = GameCore.timeElapsed;
+					}
+				}
+				else {
+					if(GameCore.timeElapsed - bulletTimer > 1000) {
+						player.setBullets(10);
+						bulletTimer = 0;
+					}
 				}
 			}
 			if (velocityX > 0.1f) {

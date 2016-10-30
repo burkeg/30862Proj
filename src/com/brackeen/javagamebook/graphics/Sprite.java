@@ -44,6 +44,9 @@ public class Sprite {
     public int getBullets()	{
     	return bulletsLeft;
     }
+    public void decBullets(int dec) {
+    	this.bulletsLeft = this.bulletsLeft - dec; 
+    }
     /**
         Updates this Sprite's Animation and its position based
         on the velocity.
