@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class Animation {
 
 
+
     private ArrayList frames;
     private int currFrameIndex;
     private long animTime;
