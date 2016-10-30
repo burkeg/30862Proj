@@ -120,8 +120,8 @@ public class GameManager extends GameCore {
 			healthTimer = GameCore.timeElapsed;
 		}
 		//System.out.println("timeElapse: " + GameCore.timeElapsed + " healthTimer: "+healthTimer);
-		if(GameCore.timeElapsed - healthTimer > 1000) {
-			//map.getPlayer().incrementHealth(5);
+		if(GameCore.timeElapsed - healthTimer > 1000 && healthTimer !=0) {
+			map.getPlayer().incrementHealth(5);
 			healthTimer = 0;
 		}
 		if (player.isAlive()) {
