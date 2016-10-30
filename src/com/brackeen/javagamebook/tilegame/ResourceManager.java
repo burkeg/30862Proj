@@ -29,6 +29,7 @@ public class ResourceManager {
     private Sprite goalSprite;
     private Sprite grubSprite;
     private Sprite flySprite;
+    private Sprite stormtrooperSprite;
     
     public Sprite newProjectileSprite() {
     	return (Sprite) projectileSprite.clone();
@@ -177,9 +178,9 @@ public class ResourceManager {
                 else if (ch == '2') {
                     addSprite(newMap, flySprite, x, y);
                 }
-                //else if (ch == '3') {
-                //	addSprite(newMap, projectileSprite,x,y);
-                //}
+                else if (ch == '3') {
+                	addSprite(newMap, stormtrooperSprite,x,y);
+                }
             }
         }
 
@@ -253,7 +254,9 @@ public class ResourceManager {
             loadImage("fly3.png"),
             loadImage("grub1.png"),
             loadImage("grub2.png"),
-            loadImage("Projectile.png")
+            loadImage("Projectile.png"),
+            loadImage("stormtrooper1.png"),
+            loadImage("stormtrooper2.png")
         };
 
         images[1] = new Image[images[0].length];
@@ -273,6 +276,7 @@ public class ResourceManager {
         Animation[] flyAnim = new Animation[4];
         Animation[] grubAnim = new Animation[4];
         Animation[] projectileAnim = new Animation[4];
+        Animation[] stormtrooperAnim = new Animation[4];
         for (int i=0; i<4; i++) {
             playerAnim[i] = createPlayerAnim(
                 images[i][0], images[i][1], images[i][2]);
@@ -282,7 +286,8 @@ public class ResourceManager {
                 images[i][6], images[i][7]);
             projectileAnim[i] = createProjectileAnim(
                     images[i][8]);
-            
+            stormtrooperAnim[i] = createStormtrooperAnim(
+                    images[i][9], images[i][10]);            
         }
 
         // create creature sprites
@@ -294,11 +299,20 @@ public class ResourceManager {
             grubAnim[2], grubAnim[3]); 
         projectileSprite = new Projectile(projectileAnim[0], projectileAnim[1],
         		projectileAnim[2], projectileAnim[3]);
+        stormtrooperSprite = new Stormtrooper(stormtrooperAnim[0], stormtrooperAnim[1],
+        		stormtrooperAnim[2], stormtrooperAnim[3]);
         
     }
 
 
-    private Animation createPlayerAnim(Image player1,
+    private Animation createStormtrooperAnim(Image img1, Image img2) {
+        Animation anim = new Animation();
+        anim.addFrame(img1, 250);
+        anim.addFrame(img2, 250);
+        return anim;
+    }
+    
+	private Animation createPlayerAnim(Image player1,
         Image player2, Image player3)
     {
         Animation anim = new Animation();
