@@ -11,6 +11,7 @@ public class Player extends Creature {
     private int shots_left = 10;
     private boolean onGround;
     private float bulletSpeed = 0.5f;
+    public final int fireRate = 200;
 
     public Player(Animation left, Animation right,
         Animation deadLeft, Animation deadRight)

@@ -133,7 +133,7 @@ public class GameManager extends GameCore {
 			float velocityX = player.getVelocityX();
 			if (moveLeft.isPressed()) {
 				player.setSpawn(0);
-				//player.setOrientation(-1);
+				// player.setOrientation(-1);
 				if (player.getVelocityX() == 0) {
 					velocityX = -player.getMaxSpeed() / 2.0f;
 				} else {
@@ -166,7 +166,7 @@ public class GameManager extends GameCore {
 					// + " bulletTimer: " + bulletTimer);
 					// System.out.println("Differece: "
 					// + (GameCore.timeElapsed - bulletTimer));
-					if (GameCore.timeElapsed - bulletTimer > 200
+					if (GameCore.timeElapsed - bulletTimer > player.fireRate
 							|| bulletTimer == 0) {
 						projectileSprite.setX((int) player.getX());
 						projectileSprite.setY((int) player.getY());
@@ -363,7 +363,7 @@ public class GameManager extends GameCore {
 			// normal update
 			sprite.update(elapsedTime);
 		}
-		while(!projSprites.isEmpty()) {
+		while (!projSprites.isEmpty()) {
 			Sprite sprite = projSprites.getFirst();
 			if (sprite instanceof Creature) {
 				Creature creature = (Creature) sprite;
@@ -413,6 +413,9 @@ public class GameManager extends GameCore {
 		}
 		if (creature instanceof Player) {
 			checkPlayerCollision((Player) creature, false);
+			if (creature.getHealth()<=0){
+				creature.setState(Creature.STATE_DYING);
+			}
 		}
 		if (creature instanceof Projectile) {
 			checkProjectileCollision((Projectile) creature, true);
@@ -469,28 +472,39 @@ public class GameManager extends GameCore {
 			} else {
 				((Stormtrooper) creature).setTimeWithPlayerOnScreen(0);
 			}
-			
-			if (((Stormtrooper) creature).getTimeWithPlayerOnScreen() > 2000) {
+
+			if (((Stormtrooper) creature).getTimeWithPlayerOnScreen() > 500) {// 1/2
+																				// second
+																				// before
+																				// player
+																				// is
+																				// on
+																				// screen
+																				// and
+																				// shooting
+																				// starts
 				System.out.println("Stormtrooper bullet time: "
 						+ ((Stormtrooper) creature).getBulletTimer());
-				if (GameCore.timeElapsed - ((Stormtrooper) creature)
-						.getBulletTimer() > 400
-						|| ((Stormtrooper) creature)
-						.getBulletTimer() == 0) {
+				if (GameCore.timeElapsed
+						- ((Stormtrooper) creature).getBulletTimer() > ((Stormtrooper) creature).fireRate
+						|| ((Stormtrooper) creature).getBulletTimer() == 0) {
 					Sprite projectileSprite = resourceManager
 							.newProjectileSprite();
-					((Projectile)projectileSprite).setIsFriendly(false);
+					((Projectile) projectileSprite).setIsFriendly(false);
 					projectileSprite.setX((int) creature.getX());
 					projectileSprite.setY((int) creature.getY());
-					projectileSprite.setVelocityX(((Stormtrooper) creature).getBulletSpeed()
-							* creature.getOrientationMoving());
+					projectileSprite
+							.setVelocityX(((Stormtrooper) creature)
+									.getBulletSpeed()
+									* creature.getOrientationMoving());
 					// resourceManager.addSprite(map, projectileSprite,(int)
 					// creature.getX(),(int) creature.getY());
 					projSprites.add(projectileSprite);
-					((Stormtrooper) creature).setBulletTimer(GameCore.timeElapsed);
+					((Stormtrooper) creature)
+							.setBulletTimer(GameCore.timeElapsed);
 				}
-			//	((Stormtrooper) creature).incBulletTimer(elapsedTime);
-				
+				// ((Stormtrooper) creature).incBulletTimer(elapsedTime);
+
 			}
 		}
 
@@ -515,7 +529,8 @@ public class GameManager extends GameCore {
 			Creature badguy = (Creature) collisionSprite;
 			if (badguy instanceof Projectile
 					&& !((Projectile) badguy).getIsFriendly()) {
-				player.setState(Creature.STATE_DYING);
+				player.incrementHealth(-5);
+				((Creature) collisionSprite).setState(Creature.STATE_DEAD);
 				return;
 			}
 			if (canKill) {
@@ -532,7 +547,12 @@ public class GameManager extends GameCore {
 				if (badguy instanceof Projectile
 						&& ((Projectile) badguy).getIsFriendly())
 					return;
-				player.setState(Creature.STATE_DYING);
+				if (badguy instanceof Projectile
+						&& !((Projectile) badguy).getIsFriendly()) {
+					badguy.incrementHealth(-5);
+					return;
+				}
+	 			player.setState(Creature.STATE_DYING);
 
 			}
 		}
@@ -557,7 +577,11 @@ public class GameManager extends GameCore {
 			}
 			if (proj.getIsFriendly()) {
 				soundManager.play(boopSound);
-				badguy.setState(Creature.STATE_DYING);
+				if (badguy instanceof Player) {
+					badguy.incrementHealth(-5);
+				} else {
+					badguy.setState(Creature.STATE_DYING);
+				}
 				proj.setState(Creature.STATE_DEAD);
 			}
 
