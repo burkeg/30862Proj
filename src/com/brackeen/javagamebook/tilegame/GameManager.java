@@ -48,7 +48,6 @@ public class GameManager extends GameCore {
 	private GameAction exit;
 	private GameAction shoot;
 
-
 	public void init() {
 		super.init();
 
@@ -109,19 +108,21 @@ public class GameManager extends GameCore {
 		if (exit.isPressed()) {
 			stop();
 		}
-		
+
 		float accel = 1.05f;
 		float decel = 0.96f;
 		Player player = (Player) map.getPlayer();
-		//System.out.println(GameCore.timeElapsed - healthTimer + ":"+player.getVelocityX()+":"+player.getVelocityX());
-		if(player.getVelocityX()!=0.0 || player.getVelocityY() != 0.0) {
+		// System.out.println(GameCore.timeElapsed - healthTimer +
+		// ":"+player.getVelocityX()+":"+player.getVelocityX());
+		if (player.getVelocityX() != 0.0 || player.getVelocityY() != 0.0) {
 			healthTimer = 0;
 		}
-		if(player.getVelocityX()==0 && player.getVelocityY() == 0 && healthTimer == 0 && player.getSpawn() != 1) {
+		if (player.getVelocityX() == 0 && player.getVelocityY() == 0
+				&& healthTimer == 0 && player.getSpawn() != 1) {
 			healthTimer = GameCore.timeElapsed;
 		}
-		
-		if(GameCore.timeElapsed - healthTimer > 1000 && healthTimer !=0) {
+
+		if (GameCore.timeElapsed - healthTimer > 1000 && healthTimer != 0) {
 			map.getPlayer().incrementHealth(5);
 			healthTimer = 0;
 		}
@@ -150,8 +151,8 @@ public class GameManager extends GameCore {
 				player.setSpawn(0);
 				player.jump(false);
 			}
-			if(player.getBullets() == 0){
-				if(GameCore.timeElapsed - bulletTimer > 1000) {
+			if (player.getBullets() == 0) {
+				if (GameCore.timeElapsed - bulletTimer > 1000) {
 					player.setBullets(10);
 					bulletTimer = 0;
 				}
@@ -159,12 +160,16 @@ public class GameManager extends GameCore {
 			if (shoot.isPressed()) {
 				player.setSpawn(0);
 				if (player.getBullets() > 0) {
-					System.out.println("timeElapse: " + GameCore.timeElapsed + " bulletTimer: "+bulletTimer);
-					System.out.println("Differece: " + (GameCore.timeElapsed-bulletTimer));
-					if(GameCore.timeElapsed - bulletTimer > 200 || bulletTimer == 0){
+					System.out.println("timeElapse: " + GameCore.timeElapsed
+							+ " bulletTimer: " + bulletTimer);
+					System.out.println("Differece: "
+							+ (GameCore.timeElapsed - bulletTimer));
+					if (GameCore.timeElapsed - bulletTimer > 200
+							|| bulletTimer == 0) {
 						projectileSprite.setX((int) player.getX());
 						projectileSprite.setY((int) player.getY());
-						projectileSprite.setVelocityX(player.getMaxSpeed()*player.getOrientation());
+						projectileSprite.setVelocityX(player.getMaxSpeed()
+								* player.getOrientation());
 						map.addSprite(projectileSprite);
 						player.decBullets(1);
 						bulletTimer = GameCore.timeElapsed;
@@ -176,11 +181,11 @@ public class GameManager extends GameCore {
 
 				if (moveLeft.isPressed()) {
 					velocityX *= Math.pow(decel, 6); // aggro
-					//System.out.println("aggroSlowRight"); // DECELLERATION
+					// System.out.println("aggroSlowRight"); // DECELLERATION
 				} else // if (!moveRight.isPressed()) {
 				{
 					velocityX *= decel; // low DECELLERATION
-					//System.out.println("regSlowRight"); // DECELLERATION
+					// System.out.println("regSlowRight"); // DECELLERATION
 				}
 				if (velocityX > player.getMaxSpeed()) {
 					velocityX = player.getMaxSpeed();
@@ -189,13 +194,14 @@ public class GameManager extends GameCore {
 
 				if (moveRight.isPressed()) {
 					velocityX *= Math.pow(decel, 6); // aggro
-					//System.out.println("aggroSlowLeft"); // DECELLERATION
+					// System.out.println("aggroSlowLeft"); // DECELLERATION
 				} else // if (!moveRight.isPressed()) {
 				{
-					//System.out.println(velocityX + " * " + decel + " = " + velocityX*decel);
+					// System.out.println(velocityX + " * " + decel + " = " +
+					// velocityX*decel);
 
 					velocityX *= decel; // low DECELLERATION
-					//System.out.println("regSlowLeft"); // DECELLERATION
+					// System.out.println("regSlowLeft"); // DECELLERATION
 				}
 				if (velocityX < -player.getMaxSpeed()) {
 					velocityX = -player.getMaxSpeed();
@@ -205,7 +211,7 @@ public class GameManager extends GameCore {
 				velocityX = 0;
 			}
 
-			//System.out.println(velocityX);
+			// System.out.println(velocityX);
 			player.setVelocityX(velocityX);
 		} else
 			player.setVelocityX(0);
@@ -214,9 +220,9 @@ public class GameManager extends GameCore {
 
 	public void draw(Graphics2D g) {
 		renderer.draw(g, map, screen.getWidth(), screen.getHeight());
-		g.drawString("Health: "+ map.getPlayer().getHealth(), 20, 50);
-		g.drawString("Bullets: "+ map.getPlayer().getBullets(), 140, 50);
-		g.drawString("Score:" , 20, 80);
+		g.drawString("Health: " + map.getPlayer().getHealth(), 20, 50);
+		g.drawString("Bullets: " + map.getPlayer().getBullets(), 140, 50);
+		g.drawString("Score:", 20, 80);
 	}
 
 	/**
@@ -355,7 +361,7 @@ public class GameManager extends GameCore {
 			// normal update
 			sprite.update(elapsedTime);
 		}
-    	
+
 	}
 
 	/**
@@ -373,7 +379,7 @@ public class GameManager extends GameCore {
 		// change x
 		float dx = creature.getVelocityX();
 		float oldX = creature.getX();
-		float newX = oldX + dx * elapsedTime; 							//HERE IS DISTANCE TRAVELLED
+		float newX = oldX + dx * elapsedTime; // HERE IS DISTANCE TRAVELLED
 		Point tile = getTileCollision(creature, newX, creature.getY());
 		if (tile == null) {
 			creature.setX(newX);
@@ -434,21 +440,30 @@ public class GameManager extends GameCore {
 
 		// check for player collision with other sprites
 		Sprite collisionSprite = getSpriteCollision(player);
-		if (collisionSprite instanceof Projectile) {
-		} else if (collisionSprite instanceof PowerUp) {
+		if (collisionSprite instanceof PowerUp) {
 			acquirePowerUp((PowerUp) collisionSprite);
 		} else if (collisionSprite instanceof Creature) {
 			Creature badguy = (Creature) collisionSprite;
+			if (badguy instanceof Projectile
+					&& !((Projectile) badguy).getIsFriendly()) {
+				player.setState(Creature.STATE_DYING);
+				return;
+			}
 			if (canKill) {
 				// kill the badguy and make player bounce
-				soundManager.play(boopSound);
-				badguy.setState(Creature.STATE_DYING);
-				player.incrementHealth(10);
-				player.setY(badguy.getY() - player.getHeight());
-				player.jump(true);
+				if (!(badguy instanceof Projectile)) {
+					soundManager.play(boopSound);
+					badguy.setState(Creature.STATE_DYING);
+					player.incrementHealth(10);
+					player.setY(badguy.getY() - player.getHeight());
+					player.jump(true);
+				}
 			} else {
 				// player dies!
-				player.setState(Creature.STATE_DYING);
+				if (badguy instanceof Projectile
+						&& !((Projectile) badguy).getIsFriendly()) {
+					player.setState(Creature.STATE_DYING);
+				}
 			}
 		}
 	}
@@ -466,13 +481,15 @@ public class GameManager extends GameCore {
 		Sprite collisionSprite = getSpriteCollision(proj);
 		if (collisionSprite instanceof Creature) {
 			Creature badguy = (Creature) collisionSprite;
-			if (canKill && !(badguy instanceof Player) && !(badguy instanceof Projectile)) {
-				// kill the badguy and make player bounce
-				soundManager.play(boopSound);
-				badguy.setState(Creature.STATE_DYING);
-				proj.setState(Creature.STATE_DEAD);
+			if (badguy instanceof Projectile || badguy instanceof Player
+					&& proj.getIsFriendly()) {
+				return;
 			}
-			
+
+			soundManager.play(boopSound);
+			badguy.setState(Creature.STATE_DYING);
+			proj.setState(Creature.STATE_DEAD);
+
 		}
 	}
 
