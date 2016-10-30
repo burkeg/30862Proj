@@ -13,15 +13,15 @@ public class Sprite {
     private float dy;
 	private int health = 20; 
 	private int bulletsLeft = 10;
-	private boolean orientation = true; //facing right
+	private int orientation = 1; //facing right
 
     /**
         Creates a new Sprite object with the specified Animation.
     */
-	public boolean getOrientation() {
+	public int getOrientation() {
 		return orientation;
 	}
-	public void setOrientation(boolean dir) {
+	public void setOrientation(int dir) {
 		this.orientation = dir;
 	}
     public Sprite(Animation anim) {

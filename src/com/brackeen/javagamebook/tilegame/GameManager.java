@@ -127,6 +127,7 @@ public class GameManager extends GameCore {
 		if (player.isAlive()) {
 			float velocityX = player.getVelocityX();
 			if (moveLeft.isPressed()) {
+				player.setOrientation(-1);
 				if (player.getVelocityX() == 0) {
 					velocityX = -player.getMaxSpeed() / 2.0f;
 				} else {
@@ -134,6 +135,7 @@ public class GameManager extends GameCore {
 				}
 			}
 			if (moveRight.isPressed()) {
+				player.setOrientation(1);
 				if (player.getVelocityX() == 0) {
 					velocityX = player.getMaxSpeed() / 2.0f;
 				} else {
@@ -151,10 +153,7 @@ public class GameManager extends GameCore {
 							.newProjectileSprite();
 					projectileSprite.setX((int) player.getX());
 					projectileSprite.setY((int) player.getY());
-					projectileSprite
-							.setVelocityX((((Float.floatToIntBits(player
-									.getVelocityX()) >>> 31) == 0) ? 1 : -1)
-									* projectileSprite.getVelocityX());
+					projectileSprite.setVelocityX(player.getMaxSpeed()*player.getOrientation());
 					map.addSprite(projectileSprite);
 					// resourceManager.addSprite(map,
 					// resourceManager.newProjectileSprite(),(int)player.getX(),(int)player.getY());
