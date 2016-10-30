@@ -25,6 +25,7 @@ public abstract class Creature extends Sprite {
     private Animation deadRight;
     private int state;
     private long stateTime;
+   
 
     /**
         Creates a new Creature with the specified Animations.
@@ -58,6 +59,7 @@ public abstract class Creature extends Sprite {
             return null;
         }
     }
+    
 
 
     /**

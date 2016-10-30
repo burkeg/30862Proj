@@ -79,7 +79,7 @@ public class GameManager extends GameCore {
 	}
 
 	/**
-	 * Closes any resurces used by the GameManager.
+	 * Closes any resources used by the GameManager.
 	 */
 	public void stop() {
 		super.stop();
@@ -117,7 +117,7 @@ public class GameManager extends GameCore {
 		if(player.getVelocityX()!=0.0 || player.getVelocityY() != 0.0) {
 			healthTimer = 0;
 		}
-		if(player.getVelocityX()==0 && player.getVelocityY() == 0 && healthTimer == 0) {
+		if(player.getVelocityX()==0 && player.getVelocityY() == 0 && healthTimer == 0 && player.getSpawn() != 1) {
 			healthTimer = GameCore.timeElapsed;
 		}
 		
@@ -125,9 +125,11 @@ public class GameManager extends GameCore {
 			map.getPlayer().incrementHealth(5);
 			healthTimer = 0;
 		}
+		Sprite projectileSprite = resourceManager.newProjectileSprite();
 		if (player.isAlive()) {
 			float velocityX = player.getVelocityX();
 			if (moveLeft.isPressed()) {
+				player.setSpawn(0);
 				player.setOrientation(-1);
 				if (player.getVelocityX() == 0) {
 					velocityX = -player.getMaxSpeed() / 2.0f;
@@ -137,6 +139,7 @@ public class GameManager extends GameCore {
 			}
 			if (moveRight.isPressed()) {
 				player.setOrientation(1);
+				player.setSpawn(0);
 				if (player.getVelocityX() == 0) {
 					velocityX = player.getMaxSpeed() / 2.0f;
 				} else {
@@ -144,14 +147,21 @@ public class GameManager extends GameCore {
 				}
 			}
 			if (jump.isPressed()) {
+				player.setSpawn(0);
 				player.jump(false);
 			}
+			if(player.getBullets() == 0){
+				if(GameCore.timeElapsed - bulletTimer > 1000) {
+					player.setBullets(10);
+					bulletTimer = 0;
+				}
+			}
 			if (shoot.isPressed()) {
+				player.setSpawn(0);
 				if (player.getBullets() > 0) {
 					System.out.println("timeElapse: " + GameCore.timeElapsed + " bulletTimer: "+bulletTimer);
 					System.out.println("Differece: " + (GameCore.timeElapsed-bulletTimer));
-					if(GameCore.timeElapsed - bulletTimer > 150 || bulletTimer == 0){
-						Sprite projectileSprite = resourceManager.newProjectileSprite();
+					if(GameCore.timeElapsed - bulletTimer > 200 || bulletTimer == 0){
 						projectileSprite.setX((int) player.getX());
 						projectileSprite.setY((int) player.getY());
 						projectileSprite.setVelocityX(player.getMaxSpeed()*player.getOrientation());
@@ -160,12 +170,7 @@ public class GameManager extends GameCore {
 						bulletTimer = GameCore.timeElapsed;
 					}
 				}
-				else {
-					if(GameCore.timeElapsed - bulletTimer > 1000) {
-						player.setBullets(10);
-						bulletTimer = 0;
-					}
-				}
+
 			}
 			if (velocityX > 0.1f) {
 
@@ -210,6 +215,7 @@ public class GameManager extends GameCore {
 	public void draw(Graphics2D g) {
 		renderer.draw(g, map, screen.getWidth(), screen.getHeight());
 		g.drawString("Health: "+ map.getPlayer().getHealth(), 20, 50);
+		g.drawString("Bullets: "+ map.getPlayer().getBullets(), 140, 50);
 		g.drawString("Score:" , 20, 80);
 	}
 
@@ -422,6 +428,7 @@ public class GameManager extends GameCore {
 	public void checkPlayerCollision(Player player, boolean canKill) {
 		if (!player.isAlive()) {
 			map.getPlayer().setHealth(20);
+			map.getPlayer().setSpawn(1);
 			return;
 		}
 

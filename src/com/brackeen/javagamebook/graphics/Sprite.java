@@ -14,10 +14,24 @@ public class Sprite {
 	private int health = 20; 
 	private int bulletsLeft = 10;
 	private int orientation = 1; //facing right
+	private float distanceTraveled = 0;
+	private int spawn = 1; //new spawn shouldn't be able to regenerate health
 
     /**
         Creates a new Sprite object with the specified Animation.
     */
+	public int getSpawn() {
+		return spawn;
+	}
+	public void setSpawn(int i) {
+		spawn = i;
+	}
+	public float getDistanceTraveled() {
+		return distanceTraveled;
+	}
+	public void setDistanceTraveled(float dist) {
+		this.distanceTraveled += dist;
+	}
 	public int getOrientation() {
 		return orientation;
 	}
@@ -31,7 +45,7 @@ public class Sprite {
     	this.health = h;
     }
     public void incrementHealth(int h){
-    	this.health = this.health + h;
+    	this.health += h;
     	if(this.health > 40)
     		this.health = 40;
     }
