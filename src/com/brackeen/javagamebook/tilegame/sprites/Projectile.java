@@ -8,6 +8,14 @@ import com.brackeen.javagamebook.graphics.Animation;
 public class Projectile extends Creature {
 	private float maxSpeed;
 	private boolean isFriendly;
+	private float distanceLeft = 40.0f;
+	
+	public void decDistanceLeft(float dec) {
+		distanceLeft -= dec;
+		if (distanceLeft < 0)
+			this.setState(STATE_DEAD);
+	}
+	
     public Projectile(Animation left, Animation right,
         Animation deadLeft, Animation deadRight)
     {

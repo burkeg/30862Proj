@@ -3,6 +3,7 @@ package com.brackeen.javagamebook.tilegame;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
@@ -47,6 +48,7 @@ public class GameManager extends GameCore {
 	private GameAction jump;
 	private GameAction exit;
 	private GameAction shoot;
+	private LinkedList<Sprite> projSprites = new LinkedList<Sprite>();
 
 	public void init() {
 		super.init();
@@ -160,10 +162,10 @@ public class GameManager extends GameCore {
 			if (shoot.isPressed()) {
 				player.setSpawn(0);
 				if (player.getBullets() > 0) {
-					System.out.println("timeElapse: " + GameCore.timeElapsed
-							+ " bulletTimer: " + bulletTimer);
-					System.out.println("Differece: "
-							+ (GameCore.timeElapsed - bulletTimer));
+					// System.out.println("timeElapse: " + GameCore.timeElapsed
+					// + " bulletTimer: " + bulletTimer);
+					// System.out.println("Differece: "
+					// + (GameCore.timeElapsed - bulletTimer));
 					if (GameCore.timeElapsed - bulletTimer > 200
 							|| bulletTimer == 0) {
 						projectileSprite.setX((int) player.getX());
@@ -361,6 +363,22 @@ public class GameManager extends GameCore {
 			// normal update
 			sprite.update(elapsedTime);
 		}
+		while(!projSprites.isEmpty()) {
+			Sprite sprite = projSprites.getFirst();
+			if (sprite instanceof Creature) {
+				Creature creature = (Creature) sprite;
+				if (creature.getState() == Creature.STATE_DEAD) {
+					i.remove();
+				} else {
+					updateCreature(creature, elapsedTime);
+				}
+			}
+			// normal update
+			sprite.update(elapsedTime);
+			map.addSprite(sprite);
+			projSprites.removeFirst();
+		}
+		// map.addSprite(null);
 
 	}
 
@@ -422,10 +440,57 @@ public class GameManager extends GameCore {
 			checkPlayerCollision((Player) creature, canKill);
 		}
 		if (creature instanceof Projectile) {
+			((Projectile) creature).decDistanceLeft(dx);
 			checkProjectileCollision((Projectile) creature, true);
 		}
 		if (creature instanceof Stormtrooper) {
-
+			/*
+			 * if (shoot.isPressed()) { player.setSpawn(0); if
+			 * (player.getBullets() > 0) { //System.out.println("timeElapse: " +
+			 * GameCore.timeElapsed // + " bulletTimer: " + bulletTimer);
+			 * //System.out.println("Differece: " // + (GameCore.timeElapsed -
+			 * bulletTimer)); if (GameCore.timeElapsed - bulletTimer > 200 ||
+			 * bulletTimer == 0) { projectileSprite.setX((int) player.getX());
+			 * projectileSprite.setY((int) player.getY());
+			 * projectileSprite.setVelocityX(player.getMaxSpeed()
+			 * player.getOrientation()); map.addSprite(projectileSprite);
+			 * player.decBullets(1); bulletTimer = GameCore.timeElapsed; } }
+			 * 
+			 * }
+			 */
+			// ((Stormtrooper)creature).incTimeSinceLastShot(elapsedTime);
+			if (Math.abs(map.getPlayer().getX()
+					- ((Stormtrooper) creature).getX()) < 400.0f) { // checks if
+																	// Stormtrooper
+																	// is
+																	// onscreen
+				((Stormtrooper) creature)
+						.incTimeWithPlayerOnScreen(elapsedTime);
+			} else {
+				((Stormtrooper) creature).setTimeWithPlayerOnScreen(0);
+			}
+			
+			if (((Stormtrooper) creature).getTimeWithPlayerOnScreen() > 2000) {
+				System.out.println("Stormtrooper bullet time: "
+						+ ((Stormtrooper) creature).getBulletTimer());
+				if (GameCore.timeElapsed - ((Stormtrooper) creature)
+						.getBulletTimer() > 400
+						|| bulletTimer == 0) {
+					Sprite projectileSprite = resourceManager
+							.newProjectileSprite();
+					((Projectile)projectileSprite).setIsFriendly(false);
+					projectileSprite.setX((int) creature.getX());
+					projectileSprite.setY((int) creature.getY());
+					projectileSprite.setVelocityX(creature.getMaxSpeed()
+							* creature.getOrientation());
+					// resourceManager.addSprite(map, projectileSprite,(int)
+					// creature.getX(),(int) creature.getY());
+					projSprites.add(projectileSprite);
+					((Stormtrooper) creature).setBulletTimer(0);
+				}
+				((Stormtrooper) creature).incBulletTimer(elapsedTime);
+				
+			}
 		}
 
 	}

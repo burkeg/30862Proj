@@ -8,6 +8,9 @@ import com.brackeen.javagamebook.graphics.Animation;
 public class Stormtrooper extends Creature {
 	private long timeWithPlayerOnScreen = 0;
 	private long timeSinceLastShot = 0;
+	private float bulletSpeed = 0.5f;
+	private long bulletTimer = 0;
+	
     public Stormtrooper(Animation left, Animation right,
         Animation deadLeft, Animation deadRight)
     {
@@ -18,6 +21,10 @@ public class Stormtrooper extends Creature {
     public float getMaxSpeed() {
         return 0.05f;
     }
+    
+    public float getBulletSpeed() {
+		return bulletSpeed ;
+	}
 
 
 	public long getTimeWithPlayerOnScreen() {
@@ -45,6 +52,20 @@ public class Stormtrooper extends Creature {
 	
 	public void incTimeSinceLastShot(long timeSinceLastShot) {
 		this.timeSinceLastShot += timeSinceLastShot;
+	}
+
+
+	public long getBulletTimer() {
+		return bulletTimer;
+	}
+
+
+	public void setBulletTimer(long bulletTimer) {
+		this.bulletTimer = bulletTimer;
+	}
+	
+	public void incBulletTimer(long bulletTimer) {
+		this.bulletTimer += bulletTimer;
 	}
 
 }
