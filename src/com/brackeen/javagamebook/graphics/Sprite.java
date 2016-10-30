@@ -13,10 +13,17 @@ public class Sprite {
     private float dy;
 	private int health = 20; 
 	private int bulletsLeft = 10;
+	private boolean orientation = true; //facing right
 
     /**
         Creates a new Sprite object with the specified Animation.
     */
+	public boolean getOrientation() {
+		return orientation;
+	}
+	public void setOrientation(boolean dir) {
+		this.orientation = dir;
+	}
     public Sprite(Animation anim) {
         this.anim = anim;
     }
@@ -28,8 +35,6 @@ public class Sprite {
     	if(this.health > 40)
     		this.health = 40;
     }
-    
- 
     public int getHealth() {
     	return health;
     }

@@ -121,7 +121,7 @@ public class GameManager extends GameCore {
 		}
 		//System.out.println("timeElapse: " + GameCore.timeElapsed + " healthTimer: "+healthTimer);
 		if(GameCore.timeElapsed - healthTimer > 1000) {
-			map.getPlayer().incrementHealth(5);
+			//map.getPlayer().incrementHealth(5);
 			healthTimer = 0;
 		}
 		if (player.isAlive()) {
@@ -414,7 +414,7 @@ public class GameManager extends GameCore {
 	 */
 	public void checkPlayerCollision(Player player, boolean canKill) {
 		if (!player.isAlive()) {
-			map.getPlayer().setHealth(0);
+			map.getPlayer().setHealth(20);
 			return;
 		}
 
@@ -429,6 +429,7 @@ public class GameManager extends GameCore {
 				// kill the badguy and make player bounce
 				soundManager.play(boopSound);
 				badguy.setState(Creature.STATE_DYING);
+				player.incrementHealth(10);
 				player.setY(badguy.getY() - player.getHeight());
 				player.jump(true);
 			} else {
