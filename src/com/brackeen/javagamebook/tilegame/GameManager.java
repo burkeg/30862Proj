@@ -133,7 +133,7 @@ public class GameManager extends GameCore {
 			float velocityX = player.getVelocityX();
 			if (moveLeft.isPressed()) {
 				player.setSpawn(0);
-				player.setOrientation(-1);
+				//player.setOrientation(-1);
 				if (player.getVelocityX() == 0) {
 					velocityX = -player.getMaxSpeed() / 2.0f;
 				} else {
@@ -443,7 +443,7 @@ public class GameManager extends GameCore {
 			((Projectile) creature).decDistanceLeft(dx);
 			checkProjectileCollision((Projectile) creature, true);
 		}
-		if (creature instanceof Stormtrooper) {
+		if (creature instanceof Stormtrooper && creature.isAlive()) {
 			/*
 			 * if (shoot.isPressed()) { player.setSpawn(0); if
 			 * (player.getBullets() > 0) { //System.out.println("timeElapse: " +
@@ -475,20 +475,21 @@ public class GameManager extends GameCore {
 						+ ((Stormtrooper) creature).getBulletTimer());
 				if (GameCore.timeElapsed - ((Stormtrooper) creature)
 						.getBulletTimer() > 400
-						|| bulletTimer == 0) {
+						|| ((Stormtrooper) creature)
+						.getBulletTimer() == 0) {
 					Sprite projectileSprite = resourceManager
 							.newProjectileSprite();
 					((Projectile)projectileSprite).setIsFriendly(false);
 					projectileSprite.setX((int) creature.getX());
 					projectileSprite.setY((int) creature.getY());
-					projectileSprite.setVelocityX(creature.getMaxSpeed()
-							* creature.getOrientation());
+					projectileSprite.setVelocityX(((Stormtrooper) creature).getBulletSpeed()
+							* creature.getOrientationMoving());
 					// resourceManager.addSprite(map, projectileSprite,(int)
 					// creature.getX(),(int) creature.getY());
 					projSprites.add(projectileSprite);
-					((Stormtrooper) creature).setBulletTimer(0);
+					((Stormtrooper) creature).setBulletTimer(GameCore.timeElapsed);
 				}
-				((Stormtrooper) creature).incBulletTimer(elapsedTime);
+			//	((Stormtrooper) creature).incBulletTimer(elapsedTime);
 				
 			}
 		}
@@ -554,10 +555,11 @@ public class GameManager extends GameCore {
 					&& proj.getIsFriendly()) {
 				return;
 			}
-
-			soundManager.play(boopSound);
-			badguy.setState(Creature.STATE_DYING);
-			proj.setState(Creature.STATE_DEAD);
+			if (proj.getIsFriendly()) {
+				soundManager.play(boopSound);
+				badguy.setState(Creature.STATE_DYING);
+				proj.setState(Creature.STATE_DEAD);
+			}
 
 		}
 	}

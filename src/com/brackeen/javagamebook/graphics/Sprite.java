@@ -35,6 +35,9 @@ public class Sprite {
 	public int getOrientation() {
 		return orientation;
 	}
+	public int getOrientationMoving() {
+		return (this.getVelocityX()>0) ? 1:-1;
+	}
 	public void setOrientation(int dir) {
 		this.orientation = dir;
 	}
