@@ -128,6 +128,8 @@ public abstract class Creature extends Sprite {
     */
     public void collideHorizontal() {
         setVelocityX(-getVelocityX());
+        if (this instanceof Projectile)
+        	this.setState(STATE_DEAD);
     }
 
 

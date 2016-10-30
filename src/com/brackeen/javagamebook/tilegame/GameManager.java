@@ -373,7 +373,7 @@ public class GameManager extends GameCore {
 		// change x
 		float dx = creature.getVelocityX();
 		float oldX = creature.getX();
-		float newX = oldX + dx * elapsedTime;
+		float newX = oldX + dx * elapsedTime; 							//HERE IS DISTANCE TRAVELLED
 		Point tile = getTileCollision(creature, newX, creature.getY());
 		if (tile == null) {
 			creature.setX(newX);
@@ -464,18 +464,15 @@ public class GameManager extends GameCore {
 
 		// check for player collision with other sprites
 		Sprite collisionSprite = getSpriteCollision(proj);
-		if (collisionSprite instanceof Projectile
-				|| collisionSprite instanceof Player) {
-			// Immune
-		} else if (collisionSprite instanceof PowerUp) {
-			acquirePowerUp((PowerUp) collisionSprite);
-		} else if (collisionSprite instanceof Creature) {
+		if (collisionSprite instanceof Creature) {
 			Creature badguy = (Creature) collisionSprite;
-			if (canKill) {
+			if (canKill && !(badguy instanceof Player) && !(badguy instanceof Projectile)) {
 				// kill the badguy and make player bounce
 				soundManager.play(boopSound);
 				badguy.setState(Creature.STATE_DYING);
+				proj.setState(Creature.STATE_DEAD);
 			}
+			
 		}
 	}
 
