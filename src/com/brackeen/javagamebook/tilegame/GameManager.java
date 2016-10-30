@@ -133,7 +133,7 @@ public class GameManager extends GameCore {
 			float velocityX = player.getVelocityX();
 			if (moveLeft.isPressed()) {
 				player.setSpawn(0);
-				// player.setOrientation(-1);
+				player.setOrientation(-1);
 				if (player.getVelocityX() == 0) {
 					velocityX = -player.getMaxSpeed() / 2.0f;
 				} else {
