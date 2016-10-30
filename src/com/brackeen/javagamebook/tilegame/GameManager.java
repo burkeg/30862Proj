@@ -424,6 +424,9 @@ public class GameManager extends GameCore {
 		if (creature instanceof Projectile) {
 			checkProjectileCollision((Projectile) creature, true);
 		}
+		if (creature instanceof Stormtrooper) {
+
+		}
 
 	}
 
@@ -461,9 +464,10 @@ public class GameManager extends GameCore {
 			} else {
 				// player dies!
 				if (badguy instanceof Projectile
-						&& !((Projectile) badguy).getIsFriendly()) {
-					player.setState(Creature.STATE_DYING);
-				}
+						&& ((Projectile) badguy).getIsFriendly())
+					return;
+				player.setState(Creature.STATE_DYING);
+
 			}
 		}
 	}
