@@ -65,7 +65,7 @@ public class GameManager extends GameCore {
 		renderer.setBackground(resourceManager.loadImage("background2.png"));
 
 		// load first map
-		map = resourceManager.loadNextMap();
+		map = resourceManager.loadNextMap(20,10,0);
 
 		// load sounds
 		soundManager = new SoundManager(PLAYBACK_FORMAT);
@@ -615,7 +615,7 @@ public class GameManager extends GameCore {
 			// advance to next map
 			soundManager.play(prizeSound, new EchoFilter(2000, .7f), false);
 			((Player)map.getPlayer()).incScore(20);
-			map = resourceManager.loadNextMap();
+			map = resourceManager.loadNextMap(map.getPlayer().getHealth(), map.getPlayer().getBullets(),((Player)map.getPlayer()).getScore());
 		}
 	}
 

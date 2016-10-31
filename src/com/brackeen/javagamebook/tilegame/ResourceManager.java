@@ -89,13 +89,16 @@ public class ResourceManager {
     }
 
 
-    public TileMap loadNextMap() {
+    public TileMap loadNextMap(int health, int bullets, int score) {
         TileMap map = null;
         while (map == null) {
             currentMap++;
             try {
                 map = loadMap(
                     "maps/map" + currentMap + ".txt");
+                map.getPlayer().setHealth(health);
+                map.getPlayer().setBullets(bullets);
+                ((Player)map.getPlayer()).setScore(score);
             }
             catch (IOException ex) {
                 if (currentMap == 1) {
@@ -151,6 +154,7 @@ public class ResourceManager {
         // parse the lines to create a TileEngine
         height = lines.size();
         TileMap newMap = new TileMap(width, height);
+        Sprite player = (Sprite)playerSprite.clone();
         for (int y=0; y<height; y++) {
             String line = (String)lines.get(y);
             for (int x=0; x<line.length(); x++) {
@@ -185,7 +189,7 @@ public class ResourceManager {
         }
 
         // add the player to the map
-        Sprite player = (Sprite)playerSprite.clone();
+        
         player.setX(TileMapRenderer.tilesToPixels(3));
         player.setY(0);
         newMap.setPlayer(player);

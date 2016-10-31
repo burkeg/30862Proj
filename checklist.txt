@@ -24,8 +24,8 @@ Creatures:
 *5 for dying when hit by the character
 
 Score Display
-4 points for displaying information
+*4 points for displaying information
 
 Game Setup:
 5 for starting up with the default,
-5 for starting up with a file
+X5 for starting up with a file
