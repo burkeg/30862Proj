@@ -10,12 +10,13 @@ public class Stormtrooper extends Creature {
 	private long timeSinceLastShot = 0;
 	private float bulletSpeed = 0.25f;
 	private long bulletTimer = 0;
-	public final int fireRate = 400; //once everty 400ms
+	public static int fireRate; //once everty 400ms
 	
     public Stormtrooper(Animation left, Animation right,
         Animation deadLeft, Animation deadRight)
     {
         super(left, right, deadLeft, deadRight);
+        fireRate = Player.fireRate*2;
     }
 
 

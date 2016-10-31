@@ -16,7 +16,7 @@ public class Sprite {
 	private int orientation = 1; //facing right
 	private float distanceTraveled = 0;
 	private int spawn = 1; //new spawn shouldn't be able to regenerate health
-	protected float distanceLeft = 400.0f;
+	protected float distanceLeft = 430.0f;
     /**
         Creates a new Sprite object with the specified Animation.
     */

@@ -31,6 +31,7 @@ public class GameManager extends GameCore {
 	private static final int DRUM_TRACK = 1;
 
 	public static final float GRAVITY = 0.002f;
+	public static final float GRAVITY_MODIFIER = 1.3f;
 
 	private Point pointCache = new Point();
 	private TileMap map;
@@ -45,6 +46,8 @@ public class GameManager extends GameCore {
 	private long bulletTimer = 0;
 	private GameAction moveLeft;
 	private GameAction moveRight;
+	private GameAction moveDown;
+	private GameAction moveUp;
 	private GameAction jump;
 	private GameAction exit;
 	private GameAction shoot;
@@ -65,7 +68,7 @@ public class GameManager extends GameCore {
 		renderer.setBackground(resourceManager.loadImage("background2.png"));
 
 		// load first map
-		map = resourceManager.loadNextMap(20,10,0);
+		map = resourceManager.loadNextMap(20, 10, 0);
 
 		// load sounds
 		soundManager = new SoundManager(PLAYBACK_FORMAT);
@@ -91,6 +94,8 @@ public class GameManager extends GameCore {
 	private void initInput() {
 		moveLeft = new GameAction("moveLeft");
 		moveRight = new GameAction("moveRight");
+		moveDown = new GameAction("moveDown");
+		moveUp = new GameAction("moveUp");
 		jump = new GameAction("jump", GameAction.DETECT_INITAL_PRESS_ONLY);
 		exit = new GameAction("exit", GameAction.DETECT_INITAL_PRESS_ONLY);
 		shoot = new GameAction("shoot");
@@ -100,6 +105,8 @@ public class GameManager extends GameCore {
 
 		inputManager.mapToKey(moveLeft, KeyEvent.VK_LEFT);
 		inputManager.mapToKey(moveRight, KeyEvent.VK_RIGHT);
+		inputManager.mapToKey(moveDown, KeyEvent.VK_DOWN);
+		inputManager.mapToKey(moveUp, KeyEvent.VK_UP);
 		inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
 		inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
 		inputManager.mapToKey(shoot, KeyEvent.VK_S);
@@ -224,7 +231,7 @@ public class GameManager extends GameCore {
 		renderer.draw(g, map, screen.getWidth(), screen.getHeight());
 		g.drawString("Health: " + map.getPlayer().getHealth(), 20, 50);
 		g.drawString("Bullets: " + map.getPlayer().getBullets(), 140, 50);
-		g.drawString("Score: " + ((Player)map.getPlayer()).getScore() , 20, 80);
+		g.drawString("Score: " + ((Player) map.getPlayer()).getScore(), 20, 80);
 	}
 
 	/**
@@ -390,15 +397,15 @@ public class GameManager extends GameCore {
 
 		// apply gravity
 		if (!creature.isFlying()) {
-			creature.setVelocityY(creature.getVelocityY() + GRAVITY
-					* elapsedTime);
+			creature.setVelocityY(creature.getVelocityY()
+					+ ((moveDown.isPressed()) ? (GRAVITY*GRAVITY_MODIFIER) : (moveUp.isPressed()?GRAVITY/GRAVITY_MODIFIER:GRAVITY)) * elapsedTime);
 		}
 
 		// change x
 		float dx = creature.getVelocityX();
 		float oldX = creature.getX();
 		float newX = oldX + dx * elapsedTime; // HERE IS DISTANCE TRAVELLED
-		creature.incDistanceTraveled(Math.abs(dx*elapsedTime));
+		creature.incDistanceTraveled(Math.abs(dx * elapsedTime));
 
 		Point tile = getTileCollision(creature, newX, creature.getY());
 		if (tile == null) {
@@ -414,9 +421,9 @@ public class GameManager extends GameCore {
 			creature.collideHorizontal();
 		}
 		if (creature instanceof Player) {
-			
+
 			checkPlayerCollision((Player) creature, false);
-			if (creature.getHealth()<=0){
+			if (creature.getHealth() <= 0) {
 				creature.setState(Creature.STATE_DYING);
 			}
 		}
@@ -450,27 +457,13 @@ public class GameManager extends GameCore {
 			checkPlayerCollision((Player) creature, canKill);
 		}
 		if (creature instanceof Projectile) {
-			((Projectile) creature).decDistanceLeft(dx*elapsedTime);
+			((Projectile) creature).decDistanceLeft(dx * elapsedTime);
 			checkProjectileCollision((Projectile) creature, true);
 		}
 		if (creature instanceof Stormtrooper && creature.isAlive()) {
-			/*
-			 * if (shoot.isPressed()) { player.setSpawn(0); if
-			 * (player.getBullets() > 0) { //System.out.println("timeElapse: " +
-			 * GameCore.timeElapsed // + " bulletTimer: " + bulletTimer);
-			 * //System.out.println("Differece: " // + (GameCore.timeElapsed -
-			 * bulletTimer)); if (GameCore.timeElapsed - bulletTimer > 200 ||
-			 * bulletTimer == 0) { projectileSprite.setX((int) player.getX());
-			 * projectileSprite.setY((int) player.getY());
-			 * projectileSprite.setVelocityX(player.getMaxSpeed()
-			 * player.getOrientation()); map.addSprite(projectileSprite);
-			 * player.decBullets(1); bulletTimer = GameCore.timeElapsed; } }
-			 * 
-			 * }
-			 */
-			// ((Stormtrooper)creature).incTimeSinceLastShot(elapsedTime);
+		
 			if (Math.abs(map.getPlayer().getX()
-					- ((Stormtrooper) creature).getX()) < 400.0f) { // checks if
+					- ((Stormtrooper) creature).getX()) < 430.0f) { // checks if
 																	// Stormtrooper
 																	// is
 																	// onscreen
@@ -480,35 +473,22 @@ public class GameManager extends GameCore {
 				((Stormtrooper) creature).setTimeWithPlayerOnScreen(0);
 			}
 
-			if (((Stormtrooper) creature).getTimeWithPlayerOnScreen() > 500 || Math.abs(map.getPlayer().getX() - ((Stormtrooper) creature).getX()) < 272.0f) {// 1/2
-																				// second
-																				// before
-																				// player
-																				// is
-																				// on
-																				// screen
-																				// and
-																				// shooting
-																				// starts
-				System.out.println("Stormtrooper bullet time: "
-						+ ((Stormtrooper) creature).getBulletTimer());
-				if (GameCore.timeElapsed - ((Stormtrooper) creature).getBulletTimer() > ((Stormtrooper) creature).fireRate || ((Stormtrooper) creature).getBulletTimer() == 0) {
+			if (((Stormtrooper) creature).getTimeWithPlayerOnScreen() > 500
+					|| Math.abs(map.getPlayer().getX()
+							- ((Stormtrooper) creature).getX()) < 430.0f-128.0f) {// 1/2
+				if (GameCore.timeElapsed
+						- ((Stormtrooper) creature).getBulletTimer() > ((Stormtrooper) creature).fireRate
+						|| ((Stormtrooper) creature).getBulletTimer() == 0) {
 					Sprite projectileSprite = resourceManager
 							.newProjectileSprite();
 					((Projectile) projectileSprite).setIsFriendly(false);
 					projectileSprite.setX((int) creature.getX());
 					projectileSprite.setY((int) creature.getY());
-					projectileSprite
-							.setVelocityX(((Stormtrooper) creature)
-									.getBulletSpeed()
-									* creature.getOrientationMoving());
-					// resourceManager.addSprite(map, projectileSprite,(int)
-					// creature.getX(),(int) creature.getY());
+					projectileSprite.setVelocityX((((Stormtrooper) creature).getBulletSpeed())*(creature.getX()<map.getPlayer().getX() ? 1:-1));
 					projSprites.add(projectileSprite);
 					((Stormtrooper) creature)
 							.setBulletTimer(GameCore.timeElapsed);
 				}
-				// ((Stormtrooper) creature).incBulletTimer(elapsedTime);
 
 			}
 		}
@@ -559,7 +539,7 @@ public class GameManager extends GameCore {
 					badguy.incrementHealth(-5);
 					return;
 				}
-	 			player.setState(Creature.STATE_DYING);
+				player.setState(Creature.STATE_DYING);
 
 			}
 		}
@@ -588,7 +568,7 @@ public class GameManager extends GameCore {
 					badguy.incrementHealth(-5);
 				} else {
 					badguy.setState(Creature.STATE_DYING);
-					((Player)map.getPlayer()).incScore(5);
+					((Player) map.getPlayer()).incScore(5);
 				}
 				proj.setState(Creature.STATE_DEAD);
 			}
@@ -605,17 +585,19 @@ public class GameManager extends GameCore {
 		if (powerUp instanceof PowerUp.Star) {
 			// do something here, like give the player points
 			soundManager.play(prizeSound);
-			((Player)map.getPlayer()).incScore(5);
+			((Player) map.getPlayer()).incScore(5);
 		} else if (powerUp instanceof PowerUp.Music) {
 			// change the music
 			soundManager.play(prizeSound);
-			((Player)map.getPlayer()).incScore(10);
+			((Player) map.getPlayer()).incScore(10);
 			toggleDrumPlayback();
 		} else if (powerUp instanceof PowerUp.Goal) {
 			// advance to next map
 			soundManager.play(prizeSound, new EchoFilter(2000, .7f), false);
-			((Player)map.getPlayer()).incScore(20);
-			map = resourceManager.loadNextMap(map.getPlayer().getHealth(), map.getPlayer().getBullets(),((Player)map.getPlayer()).getScore());
+			((Player) map.getPlayer()).incScore(20);
+			map = resourceManager.loadNextMap(map.getPlayer().getHealth(), map
+					.getPlayer().getBullets(), ((Player) map.getPlayer())
+					.getScore());
 		}
 	}
 

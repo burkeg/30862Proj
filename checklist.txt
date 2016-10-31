@@ -2,7 +2,7 @@ Movement:
 *(i) left;
 *(i) right;
 *(iii) up;
-(iii) down;
+*(iii) down;
 *(iv) forward and backward jump together
 
 Shooting:
@@ -15,7 +15,7 @@ Health:
 *5 points for increases in health with movement,
 *5 for increases when creature killed,
 *5 for decrease when hit by a creature,
-5 for any health statistics maintained
+*5 for any health statistics maintained
 
 Creatures:
 *5 points for a creature that shoots,

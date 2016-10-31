@@ -11,7 +11,7 @@ public class Projectile extends Creature {
 	
 	
 	public void decDistanceLeft(float dec) {
-		distanceLeft -= dec;
+		distanceLeft -= Math.abs(dec);
 		if (distanceLeft < 0)
 			this.setState(STATE_DEAD);
 	}
@@ -20,7 +20,7 @@ public class Projectile extends Creature {
         Animation deadLeft, Animation deadRight)
     {
         super(left, right, deadLeft, deadRight);
-        maxSpeed = 0.4f;
+        maxSpeed = 0.6f;
         isFriendly = true;
     }
     
