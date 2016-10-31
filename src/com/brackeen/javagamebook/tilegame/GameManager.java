@@ -398,7 +398,7 @@ public class GameManager extends GameCore {
 		float dx = creature.getVelocityX();
 		float oldX = creature.getX();
 		float newX = oldX + dx * elapsedTime; // HERE IS DISTANCE TRAVELLED
-		creature.incDistanceTraveled(dx*elapsedTime);
+		creature.incDistanceTraveled(Math.abs(dx*elapsedTime));
 
 		Point tile = getTileCollision(creature, newX, creature.getY());
 		if (tile == null) {
@@ -442,6 +442,10 @@ public class GameManager extends GameCore {
 			creature.collideVertical();
 		}
 		if (creature instanceof Player) {
+			if (creature.getDistanceTraveled() > 64) {
+				creature.setDistanceTraveled(0);
+				creature.incrementHealth(1);
+			}
 			boolean canKill = (oldY < creature.getY());
 			checkPlayerCollision((Player) creature, canKill);
 		}
