@@ -32,6 +32,9 @@ public class Sprite {
 	public void incDistanceTraveled(float dist) {
 		this.distanceTraveled += dist;
 	}
+	public void setDistanceTraveled(float dist) {
+		this.distanceTraveled = dist;
+	}
 	public int getOrientation() {
 		return orientation;
 	}

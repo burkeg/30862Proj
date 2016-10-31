@@ -398,7 +398,7 @@ public class GameManager extends GameCore {
 		float dx = creature.getVelocityX();
 		float oldX = creature.getX();
 		float newX = oldX + dx * elapsedTime; // HERE IS DISTANCE TRAVELLED
-		creature.incDistanceTraveled(dx*elapsedTime);
+		creature.incDistanceTraveled(Math.abs(dx*elapsedTime));
 
 		Point tile = getTileCollision(creature, newX, creature.getY());
 		if (tile == null) {
@@ -442,6 +442,10 @@ public class GameManager extends GameCore {
 			creature.collideVertical();
 		}
 		if (creature instanceof Player) {
+			if (creature.getDistanceTraveled() > 64) {
+				creature.setDistanceTraveled(0);
+				creature.incrementHealth(1);
+			}
 			boolean canKill = (oldY < creature.getY());
 			checkPlayerCollision((Player) creature, canKill);
 		}
@@ -531,6 +535,7 @@ public class GameManager extends GameCore {
 			if (badguy instanceof Projectile
 					&& !((Projectile) badguy).getIsFriendly()) {
 				player.incrementHealth(-5);
+				player.incScore(-5);
 				((Creature) collisionSprite).setState(Creature.STATE_DEAD);
 				return;
 			}
@@ -540,6 +545,7 @@ public class GameManager extends GameCore {
 					soundManager.play(boopSound);
 					badguy.setState(Creature.STATE_DYING);
 					player.incrementHealth(10);
+					player.incScore(10);
 					player.setY(badguy.getY() - player.getHeight());
 					player.jump(true);
 				}
@@ -582,6 +588,7 @@ public class GameManager extends GameCore {
 					badguy.incrementHealth(-5);
 				} else {
 					badguy.setState(Creature.STATE_DYING);
+					((Player)map.getPlayer()).incScore(5);
 				}
 				proj.setState(Creature.STATE_DEAD);
 			}
