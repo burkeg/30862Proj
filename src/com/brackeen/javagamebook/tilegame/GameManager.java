@@ -224,7 +224,7 @@ public class GameManager extends GameCore {
 		renderer.draw(g, map, screen.getWidth(), screen.getHeight());
 		g.drawString("Health: " + map.getPlayer().getHealth(), 20, 50);
 		g.drawString("Bullets: " + map.getPlayer().getBullets(), 140, 50);
-		g.drawString("Score:", 20, 80);
+		g.drawString("Score: " + ((Player)map.getPlayer()).getScore() , 20, 80);
 	}
 
 	/**
@@ -476,7 +476,7 @@ public class GameManager extends GameCore {
 				((Stormtrooper) creature).setTimeWithPlayerOnScreen(0);
 			}
 
-			if (((Stormtrooper) creature).getTimeWithPlayerOnScreen() > 500) {// 1/2
+			if (((Stormtrooper) creature).getTimeWithPlayerOnScreen() > 500 || Math.abs(map.getPlayer().getX() - ((Stormtrooper) creature).getX()) < 272.0f) {// 1/2
 																				// second
 																				// before
 																				// player
@@ -488,9 +488,7 @@ public class GameManager extends GameCore {
 																				// starts
 				System.out.println("Stormtrooper bullet time: "
 						+ ((Stormtrooper) creature).getBulletTimer());
-				if (GameCore.timeElapsed
-						- ((Stormtrooper) creature).getBulletTimer() > ((Stormtrooper) creature).fireRate
-						|| ((Stormtrooper) creature).getBulletTimer() == 0) {
+				if (GameCore.timeElapsed - ((Stormtrooper) creature).getBulletTimer() > ((Stormtrooper) creature).fireRate || ((Stormtrooper) creature).getBulletTimer() == 0) {
 					Sprite projectileSprite = resourceManager
 							.newProjectileSprite();
 					((Projectile) projectileSprite).setIsFriendly(false);
@@ -597,17 +595,19 @@ public class GameManager extends GameCore {
 	public void acquirePowerUp(PowerUp powerUp) {
 		// remove it from the map
 		map.removeSprite(powerUp);
-
 		if (powerUp instanceof PowerUp.Star) {
 			// do something here, like give the player points
 			soundManager.play(prizeSound);
+			((Player)map.getPlayer()).incScore(5);
 		} else if (powerUp instanceof PowerUp.Music) {
 			// change the music
 			soundManager.play(prizeSound);
+			((Player)map.getPlayer()).incScore(10);
 			toggleDrumPlayback();
 		} else if (powerUp instanceof PowerUp.Goal) {
 			// advance to next map
 			soundManager.play(prizeSound, new EchoFilter(2000, .7f), false);
+			((Player)map.getPlayer()).incScore(20);
 			map = resourceManager.loadNextMap();
 		}
 	}

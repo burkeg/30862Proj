@@ -20,7 +20,7 @@ Health:
 Creatures:
 *5 points for a creature that shoots,
 *5 for rate of shooting,
-5 for waiting before shooting,
+*5 for waiting before shooting,
 *5 for dying when hit by the character
 
 Score Display

@@ -12,14 +12,22 @@ public class Player extends Creature {
     private boolean onGround;
     private float bulletSpeed = 0.5f;
     public final int fireRate = 200;
-
+    private int score = 0;
     public Player(Animation left, Animation right,
         Animation deadLeft, Animation deadRight)
     {
         super(left, right, deadLeft, deadRight);
     }
     
-
+    public int getScore() {
+    	return score;
+    }
+    public void setScore(int s) {
+    	this.score = s;
+    }
+    public void incScore(int s) {
+    	this.score += s;
+    }
     public void collideHorizontal() {
         setVelocityX(0);
     }
