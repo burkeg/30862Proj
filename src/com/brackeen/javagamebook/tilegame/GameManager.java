@@ -398,6 +398,8 @@ public class GameManager extends GameCore {
 		float dx = creature.getVelocityX();
 		float oldX = creature.getX();
 		float newX = oldX + dx * elapsedTime; // HERE IS DISTANCE TRAVELLED
+		creature.incDistanceTraveled(dx*elapsedTime);
+
 		Point tile = getTileCollision(creature, newX, creature.getY());
 		if (tile == null) {
 			creature.setX(newX);
@@ -412,6 +414,7 @@ public class GameManager extends GameCore {
 			creature.collideHorizontal();
 		}
 		if (creature instanceof Player) {
+			
 			checkPlayerCollision((Player) creature, false);
 			if (creature.getHealth()<=0){
 				creature.setState(Creature.STATE_DYING);
@@ -443,7 +446,7 @@ public class GameManager extends GameCore {
 			checkPlayerCollision((Player) creature, canKill);
 		}
 		if (creature instanceof Projectile) {
-			((Projectile) creature).decDistanceLeft(dx);
+			((Projectile) creature).decDistanceLeft(dx*elapsedTime);
 			checkProjectileCollision((Projectile) creature, true);
 		}
 		if (creature instanceof Stormtrooper && creature.isAlive()) {
