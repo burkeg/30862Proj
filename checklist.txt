@@ -1,0 +1,31 @@
+Movement:
+*(i) left;
+*(i) right;
+*(iii) up;
+(iii) down;
+*(iv) forward and backward jump together
+
+Shooting:
+*4 points for any shooting,
+*4 points for any continuous,
+*4 points for character shooting,
+*4 points for only 10 shots continuous
+
+Health:
+*5 points for increases in health with movement,
+*5 for increases when creature killed,
+*5 for decrease when hit by a creature,
+5 for any health statistics maintained
+
+Creatures:
+*5 points for a creature that shoots,
+*5 for rate of shooting,
+5 for waiting before shooting,
+*5 for dying when hit by the character
+
+Score Display
+4 points for displaying information
+
+Game Setup:
+5 for starting up with the default,
+5 for starting up with a file
