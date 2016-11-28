@@ -15,6 +15,7 @@ import com.brackeen.javagamebook.graphics.Sprite;
 public class TileMap {
 
     private Image[][] tiles;
+    private int[][] tiles_ints;
     private LinkedList sprites;
     private Sprite player;
 
@@ -24,6 +25,7 @@ public class TileMap {
     */
     public TileMap(int width, int height) {
         tiles = new Image[width][height];
+        tiles_ints = new int[width][height];
         sprites = new LinkedList();
     }
 
@@ -59,6 +61,17 @@ public class TileMap {
             return tiles[x][y];
         }
     }
+    
+    public int getTileInt(int x, int y) {
+        if (x < 0 || x >= getWidth() ||
+            y < 0 || y >= getHeight())
+        {
+            return -1;
+        }
+        else {
+            return tiles_ints[x][y];
+        }
+    }
 
 
     /**
@@ -66,6 +79,10 @@ public class TileMap {
     */
     public void setTile(int x, int y, Image tile) {
         tiles[x][y] = tile;
+    }
+    
+    public void setTileInt(int x, int y, int tileID) {
+        tiles_ints[x][y] = tileID;
     }
 
 

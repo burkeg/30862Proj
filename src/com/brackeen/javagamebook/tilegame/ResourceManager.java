@@ -164,6 +164,7 @@ public class ResourceManager {
                 int tile = ch - 'A';
                 if (tile >= 0 && tile < tiles.size()) {
                     newMap.setTile(x, y, (Image)tiles.get(tile));
+                    newMap.setTileInt(x, y, tile);
                 }
 
                 // check if the char represents a sprite

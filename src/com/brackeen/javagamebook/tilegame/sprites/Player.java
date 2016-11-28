@@ -6,13 +6,15 @@ import com.brackeen.javagamebook.graphics.Animation;
     The Player.
 */
 public class Player extends Creature {
-	
     private static final float JUMP_SPEED = -.95f;
     private int shots_left = 10;
     private boolean onGround;
     private float bulletSpeed = 0.5f;
     public static final int fireRate = 200;
     private int score = 0;
+    private long iFrameTimer = 0;
+    private long iFrameDistance = 0;
+    public int collisionTile = 0;
     public Player(Animation left, Animation right,
         Animation deadLeft, Animation deadRight)
     {
@@ -26,6 +28,8 @@ public class Player extends Creature {
     	this.score = s;
     }
     public void incScore(int s) {
+    	if (s < 0 && this.isInvincible())
+    		return;
     	this.score += s;
     }
     public void collideHorizontal() {
@@ -58,6 +62,8 @@ public class Player extends Creature {
         }
         super.setY(y);
     }
+    
+    
 
 
     public void wakeUp() {
@@ -84,6 +90,22 @@ public class Player extends Creature {
 
 	public float getBulletSpeed() {
 		return bulletSpeed;
+	}
+
+	public long getiFrameTimer() {
+		return iFrameTimer;
+	}
+
+	public void setiFrameTimer(long iFrameTimer) {
+		this.iFrameTimer = iFrameTimer;
+	}
+
+	public long getiFrameDistance() {
+		return iFrameDistance;
+	}
+
+	public void setiFrameDistance(long iFrameDistance) {
+		this.iFrameDistance = iFrameDistance;
 	}
 
 }

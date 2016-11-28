@@ -74,11 +74,12 @@ public class GameManager extends GameCore {
 		soundManager = new SoundManager(PLAYBACK_FORMAT);
 		prizeSound = soundManager.getSound("sounds/prize.wav");
 		boopSound = soundManager.getSound("sounds/boop2.wav");
+		
 
 		// start music
 		midiPlayer = new MidiPlayer();
 		Sequence sequence = midiPlayer.getSequence("sounds/music.midi");
-		midiPlayer.play(sequence, true);
+		//midiPlayer.play(sequence, true);
 		toggleDrumPlayback();
 	}
 
@@ -121,8 +122,7 @@ public class GameManager extends GameCore {
 		float accel = 1.05f;
 		float decel = 0.96f;
 		Player player = (Player) map.getPlayer();
-		// System.out.println(GameCore.timeElapsed - healthTimer +
-		// ":"+player.getVelocityX()+":"+player.getVelocityX());
+
 		if (player.getVelocityX() != 0.0 || player.getVelocityY() != 0.0) {
 			healthTimer = 0;
 		}
@@ -169,10 +169,7 @@ public class GameManager extends GameCore {
 			if (shoot.isPressed()) {
 				player.setSpawn(0);
 				if (player.getBullets() > 0) {
-					// System.out.println("timeElapse: " + GameCore.timeElapsed
-					// + " bulletTimer: " + bulletTimer);
-					// System.out.println("Differece: "
-					// + (GameCore.timeElapsed - bulletTimer));
+
 					if (GameCore.timeElapsed - bulletTimer > player.fireRate
 							|| bulletTimer == 0) {
 						projectileSprite.setX((int) player.getX());
@@ -190,11 +187,9 @@ public class GameManager extends GameCore {
 
 				if (moveLeft.isPressed()) {
 					velocityX *= Math.pow(decel, 6); // aggro
-					// System.out.println("aggroSlowRight"); // DECELLERATION
-				} else // if (!moveRight.isPressed()) {
+				} else 
 				{
 					velocityX *= decel; // low DECELLERATION
-					// System.out.println("regSlowRight"); // DECELLERATION
 				}
 				if (velocityX > player.getMaxSpeed()) {
 					velocityX = player.getMaxSpeed();
@@ -222,6 +217,7 @@ public class GameManager extends GameCore {
 
 			// System.out.println(velocityX);
 			player.setVelocityX(velocityX);
+			
 		} else
 			player.setVelocityX(0);
 
@@ -232,6 +228,12 @@ public class GameManager extends GameCore {
 		g.drawString("Health: " + map.getPlayer().getHealth(), 20, 50);
 		g.drawString("Bullets: " + map.getPlayer().getBullets(), 140, 50);
 		g.drawString("Score: " + ((Player) map.getPlayer()).getScore(), 20, 80);
+		g.drawString("Debug", 140, 80);
+		//g.drawString("Invincible: " + ((Player) map.getPlayer()).isInvincible(), 140, 110);
+		//g.drawString("Total_distance_traveled: " + ((Player) map.getPlayer()).getTotal_distance_traveled(), 140, 140);
+		//g.drawString("iFrameDistance: " + ((Player) map.getPlayer()).getiFrameDistance(), 140, 170);
+		//g.drawString("difference: " + (((Player) map.getPlayer()).getTotal_distance_traveled() - ((Player) map.getPlayer()).getiFrameDistance()), 140, 210);
+
 	}
 
 	/**
@@ -253,7 +255,7 @@ public class GameManager extends GameCore {
 	}
 
 	/**
-	 * Gets the tile that a Sprites collides with. Only the Sprite's X or Y
+	 * Gets the tile that a Sprite collides with. Only the Sprite's X or Y
 	 * should be changed, not both. Returns null if no collision is detected.
 	 */
 	public Point getTileCollision(Sprite sprite, float newX, float newY) {
@@ -449,10 +451,21 @@ public class GameManager extends GameCore {
 			creature.collideVertical();
 		}
 		if (creature instanceof Player) {
+			long iFrame_dx = ((Player) creature).getTotal_distance_traveled() - ((Player) creature).getiFrameDistance();
+			
+
 			if (creature.getDistanceTraveled() > 64) {
 				creature.setDistanceTraveled(0);
 				creature.incrementHealth(1);
 			}
+			if (GameManager.timeElapsed <= ((Player) creature).getiFrameTimer() && iFrame_dx < 0) {
+				((Player) creature).setInvincible((true));
+			} else {
+				((Player) creature).setInvincible((false));
+			}
+			if (((Player) creature).getiFrameDistance() == 0)
+				((Player) creature).setInvincible((false));
+
 			boolean canKill = (oldY < creature.getY());
 			checkPlayerCollision((Player) creature, canKill);
 		}
@@ -539,7 +552,13 @@ public class GameManager extends GameCore {
 					badguy.incrementHealth(-5);
 					return;
 				}
-				player.setState(Creature.STATE_DYING);
+				if (!player.isInvincible()) {
+					player.setState(Creature.STATE_DYING);
+				} else {
+					player.incrementHealth(10);
+					player.incScore(10);
+					badguy.setState(Creature.STATE_DYING);
+				}
 
 			}
 		}
@@ -586,11 +605,14 @@ public class GameManager extends GameCore {
 			// do something here, like give the player points
 			soundManager.play(prizeSound);
 			((Player) map.getPlayer()).incScore(5);
+			((Player) map.getPlayer()).setiFrameTimer(GameManager.timeElapsed+1000);
+			((Player) map.getPlayer()).setiFrameDistance(((Player) map.getPlayer()).getTotal_distance_traveled()+64*10);
 		} else if (powerUp instanceof PowerUp.Music) {
 			// change the music
 			soundManager.play(prizeSound);
 			((Player) map.getPlayer()).incScore(10);
-			toggleDrumPlayback();
+			((Player) map.getPlayer()).incrementHealth(5);
+			//PLAY MUSHROOM SOUND HERE
 		} else if (powerUp instanceof PowerUp.Goal) {
 			// advance to next map
 			soundManager.play(prizeSound, new EchoFilter(2000, .7f), false);
