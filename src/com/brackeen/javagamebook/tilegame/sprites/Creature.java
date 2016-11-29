@@ -1,6 +1,8 @@
 package com.brackeen.javagamebook.tilegame.sprites;
 
+import java.awt.Point;
 import java.lang.reflect.Constructor;
+
 import com.brackeen.javagamebook.graphics.*;
 
 /**

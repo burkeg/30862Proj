@@ -51,7 +51,13 @@ public class GameManager extends GameCore {
 	private GameAction jump;
 	private GameAction exit;
 	private GameAction shoot;
+	public static final int GAS = 9;
+	public static final int EXPLODE = 10;
+	private int vert_block_colis = 0;
+	private int hori_block_colis = 0;
 	private LinkedList<Sprite> projSprites = new LinkedList<Sprite>();
+	private boolean xDet = false;
+	private boolean yDet = false;
 
 	public void init() {
 		super.init();
@@ -229,11 +235,13 @@ public class GameManager extends GameCore {
 		g.drawString("Bullets: " + map.getPlayer().getBullets(), 140, 50);
 		g.drawString("Score: " + ((Player) map.getPlayer()).getScore(), 20, 80);
 		g.drawString("Debug", 140, 80);
-		//g.drawString("Invincible: " + ((Player) map.getPlayer()).isInvincible(), 140, 110);
-		//g.drawString("Total_distance_traveled: " + ((Player) map.getPlayer()).getTotal_distance_traveled(), 140, 140);
-		//g.drawString("iFrameDistance: " + ((Player) map.getPlayer()).getiFrameDistance(), 140, 170);
-		//g.drawString("difference: " + (((Player) map.getPlayer()).getTotal_distance_traveled() - ((Player) map.getPlayer()).getiFrameDistance()), 140, 210);
-
+		g.drawString("Invincible: " + ((Player) map.getPlayer()).isInvincible(), 140, 170);
+		g.drawString("Total_distance_traveled: " + ((Player) map.getPlayer()).getTotal_distance_traveled(), 140, 200);
+		g.drawString("iFrameDistance: " + ((Player) map.getPlayer()).getiFrameDistance(), 140, 230);
+		g.drawString("difference: " + (((Player) map.getPlayer()).getTotal_distance_traveled() - ((Player) map.getPlayer()).getiFrameDistance()), 140, 260);
+		g.drawString("hori_block_colis: " + hori_block_colis , 140, 110);
+		g.drawString("vert_block_colis: " + vert_block_colis , 140, 140);
+		
 	}
 
 	/**
@@ -423,7 +431,12 @@ public class GameManager extends GameCore {
 			creature.collideHorizontal();
 		}
 		if (creature instanceof Player) {
-
+			//Block Condition effects: horiz
+			if (tile != null) {
+				if (map.getTileInt(tile.x, tile.y) != hori_block_colis)
+					xDet = true;
+				hori_block_colis = map.getTileInt(tile.x, tile.y);
+			}
 			checkPlayerCollision((Player) creature, false);
 			if (creature.getHealth() <= 0) {
 				creature.setState(Creature.STATE_DYING);
@@ -451,6 +464,21 @@ public class GameManager extends GameCore {
 			creature.collideVertical();
 		}
 		if (creature instanceof Player) {
+			//Block Condition effects: vert
+			if (tile != null) {
+				if (map.getTileInt(tile.x, tile.y) != vert_block_colis)
+					yDet = true;
+				vert_block_colis = map.getTileInt(tile.x, tile.y);
+			}
+			
+			//Either Block Condition Effects
+			if (xDet && hori_block_colis == GAS || yDet && vert_block_colis == GAS ) {
+				((Player) creature).incScore(200);
+			}
+			
+
+			xDet = false;
+			yDet = false;
 			long iFrame_dx = ((Player) creature).getTotal_distance_traveled() - ((Player) creature).getiFrameDistance();
 			
 
