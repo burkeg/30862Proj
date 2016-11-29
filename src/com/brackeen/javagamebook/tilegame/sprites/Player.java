@@ -13,8 +13,10 @@ public class Player extends Creature {
     public static final int fireRate = 200;
     private int score = 0;
     private long iFrameTimer = 0;
+    public final float yVelocity = 0.5f; 
     private long iFrameDistance = 0;
     public int collisionTile = 0;
+    private boolean flying = false;
     public Player(Animation left, Animation right,
         Animation deadLeft, Animation deadRight)
     {
@@ -63,7 +65,13 @@ public class Player extends Creature {
         super.setY(y);
     }
     
+    public boolean isFlying() {
+        return flying;
+    }
     
+    public void setFlying(boolean state) {
+    	flying = state;
+    }
 
 
     public void wakeUp() {

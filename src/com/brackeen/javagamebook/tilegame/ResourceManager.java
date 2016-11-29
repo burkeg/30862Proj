@@ -95,7 +95,7 @@ public class ResourceManager {
             currentMap++;
             try {
                 map = loadMap(
-                    "maps/map" + currentMap + ".txt");
+                    "maps/" + GameManager.mapName);
                 map.getPlayer().setHealth(health);
                 map.getPlayer().setBullets(bullets);
                 ((Player)map.getPlayer()).setScore(score);
@@ -109,7 +109,6 @@ public class ResourceManager {
                 map = null;
             }
         }
-
         return map;
     }
 
@@ -117,7 +116,7 @@ public class ResourceManager {
     public TileMap reloadMap() {
         try {
             return loadMap(
-                "maps/map" + currentMap + ".txt");
+                "maps/" + GameManager.mapName);
         }
         catch (IOException ex) {
             ex.printStackTrace();
@@ -154,6 +153,7 @@ public class ResourceManager {
         // parse the lines to create a TileEngine
         height = lines.size();
         TileMap newMap = new TileMap(width, height);
+        newMap.hasExploded = new boolean[width][height];
         Sprite player = (Sprite)playerSprite.clone();
         for (int y=0; y<height; y++) {
             String line = (String)lines.get(y);
@@ -375,10 +375,10 @@ public class ResourceManager {
 
         // create "music" sprite
         anim = new Animation();
-        anim.addFrame(loadImage("music1.png"), 150);
-        anim.addFrame(loadImage("music2.png"), 150);
-        anim.addFrame(loadImage("music3.png"), 150);
-        anim.addFrame(loadImage("music2.png"), 150);
+        anim.addFrame(loadImage("mushroom1.png"), 150);
+        anim.addFrame(loadImage("mushroom2.png"), 150);
+        anim.addFrame(loadImage("mushroom3.png"), 150);
+        anim.addFrame(loadImage("mushroom3.png"), 150);
         musicSprite = new PowerUp.Music(anim);
     }
 

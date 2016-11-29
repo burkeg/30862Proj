@@ -21,6 +21,8 @@ import com.brackeen.javagamebook.tilegame.sprites.*;
 public class GameManager extends GameCore {
 
 	public static void main(String[] args) {
+		if (args.length != 0)
+			mapName = args[0];
 		new GameManager().run();
 	}
 
@@ -33,6 +35,7 @@ public class GameManager extends GameCore {
 	public static final float GRAVITY = 0.002f;
 	public static final float GRAVITY_MODIFIER = 1.3f;
 
+	public static String mapName = "map1.txt";
 	private Point pointCache = new Point();
 	private TileMap map;
 	private MidiPlayer midiPlayer;
@@ -48,8 +51,10 @@ public class GameManager extends GameCore {
 	private GameAction moveRight;
 	private GameAction moveDown;
 	private GameAction moveUp;
+	private GameAction debug;
 	private GameAction jump;
 	private GameAction exit;
+	private GameAction toggleGravity;
 	private GameAction shoot;
 	public static final int GAS = 9;
 	public static final int EXPLODE = 10;
@@ -58,6 +63,7 @@ public class GameManager extends GameCore {
 	private LinkedList<Sprite> projSprites = new LinkedList<Sprite>();
 	private boolean xDet = false;
 	private boolean yDet = false;
+	private boolean debugOn = false;
 
 	public void init() {
 		super.init();
@@ -75,17 +81,16 @@ public class GameManager extends GameCore {
 
 		// load first map
 		map = resourceManager.loadNextMap(20, 10, 0);
-
+		
 		// load sounds
 		soundManager = new SoundManager(PLAYBACK_FORMAT);
 		prizeSound = soundManager.getSound("sounds/prize.wav");
 		boopSound = soundManager.getSound("sounds/boop2.wav");
-		
 
 		// start music
 		midiPlayer = new MidiPlayer();
 		Sequence sequence = midiPlayer.getSequence("sounds/music.midi");
-		//midiPlayer.play(sequence, true);
+		// midiPlayer.play(sequence, true);
 		toggleDrumPlayback();
 	}
 
@@ -103,8 +108,10 @@ public class GameManager extends GameCore {
 		moveRight = new GameAction("moveRight");
 		moveDown = new GameAction("moveDown");
 		moveUp = new GameAction("moveUp");
+		debug = new GameAction("debug", GameAction.DETECT_INITAL_PRESS_ONLY);
 		jump = new GameAction("jump", GameAction.DETECT_INITAL_PRESS_ONLY);
 		exit = new GameAction("exit", GameAction.DETECT_INITAL_PRESS_ONLY);
+		toggleGravity = new GameAction("toggleGravity", GameAction.DETECT_INITAL_PRESS_ONLY);
 		shoot = new GameAction("shoot");
 
 		inputManager = new InputManager(screen.getFullScreenWindow());
@@ -114,8 +121,10 @@ public class GameManager extends GameCore {
 		inputManager.mapToKey(moveRight, KeyEvent.VK_RIGHT);
 		inputManager.mapToKey(moveDown, KeyEvent.VK_DOWN);
 		inputManager.mapToKey(moveUp, KeyEvent.VK_UP);
+		inputManager.mapToKey(debug, KeyEvent.VK_D);
 		inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
 		inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
+		inputManager.mapToKey(toggleGravity, KeyEvent.VK_G);
 		inputManager.mapToKey(shoot, KeyEvent.VK_S);
 	}
 
@@ -172,6 +181,10 @@ public class GameManager extends GameCore {
 					bulletTimer = 0;
 				}
 			}
+			if (debug.isPressed())
+				debugOn = !debugOn;
+			if (toggleGravity.isPressed())
+				player.setFlying(!player.isFlying());
 			if (shoot.isPressed()) {
 				player.setSpawn(0);
 				if (player.getBullets() > 0) {
@@ -193,8 +206,7 @@ public class GameManager extends GameCore {
 
 				if (moveLeft.isPressed()) {
 					velocityX *= Math.pow(decel, 6); // aggro
-				} else 
-				{
+				} else {
 					velocityX *= decel; // low DECELLERATION
 				}
 				if (velocityX > player.getMaxSpeed()) {
@@ -223,7 +235,7 @@ public class GameManager extends GameCore {
 
 			// System.out.println(velocityX);
 			player.setVelocityX(velocityX);
-			
+
 		} else
 			player.setVelocityX(0);
 
@@ -231,17 +243,34 @@ public class GameManager extends GameCore {
 
 	public void draw(Graphics2D g) {
 		renderer.draw(g, map, screen.getWidth(), screen.getHeight());
+
 		g.drawString("Health: " + map.getPlayer().getHealth(), 20, 50);
 		g.drawString("Bullets: " + map.getPlayer().getBullets(), 140, 50);
 		g.drawString("Score: " + ((Player) map.getPlayer()).getScore(), 20, 80);
-		g.drawString("Debug", 140, 80);
-		g.drawString("Invincible: " + ((Player) map.getPlayer()).isInvincible(), 140, 170);
-		g.drawString("Total_distance_traveled: " + ((Player) map.getPlayer()).getTotal_distance_traveled(), 140, 200);
-		g.drawString("iFrameDistance: " + ((Player) map.getPlayer()).getiFrameDistance(), 140, 230);
-		g.drawString("difference: " + (((Player) map.getPlayer()).getTotal_distance_traveled() - ((Player) map.getPlayer()).getiFrameDistance()), 140, 260);
-		g.drawString("hori_block_colis: " + hori_block_colis , 140, 110);
-		g.drawString("vert_block_colis: " + vert_block_colis , 140, 140);
-		
+		if (debugOn) {
+			g.drawString("Debug", 140, 80);
+			g.drawString(
+					"Invincible: " + ((Player) map.getPlayer()).isInvincible(),
+					140, 170);
+			g.drawString(
+					"Total_distance_traveled: "
+							+ ((Player) map.getPlayer())
+									.getTotal_distance_traveled(), 140, 200);
+			g.drawString(
+					"iFrameDistance: "
+							+ ((Player) map.getPlayer()).getiFrameDistance(),
+					140, 230);
+			g.drawString(
+					"difference: "
+							+ (((Player) map.getPlayer())
+									.getTotal_distance_traveled() - ((Player) map
+									.getPlayer()).getiFrameDistance()), 140,
+					260);
+			g.drawString("hori_block_colis: " + hori_block_colis, 140, 110);
+			g.drawString("vert_block_colis: " + vert_block_colis, 140, 140);
+			g.drawString("gravity_enabled: " + ((Player)map.getPlayer()).isFlying(), 300, 50);
+		}
+
 	}
 
 	/**
@@ -406,9 +435,22 @@ public class GameManager extends GameCore {
 	private void updateCreature(Creature creature, long elapsedTime) {
 
 		// apply gravity
+		
 		if (!creature.isFlying()) {
 			creature.setVelocityY(creature.getVelocityY()
-					+ ((moveDown.isPressed()) ? (GRAVITY*GRAVITY_MODIFIER) : (moveUp.isPressed()?GRAVITY/GRAVITY_MODIFIER:GRAVITY)) * elapsedTime);
+					+ ((moveDown.isPressed()) ? (GRAVITY * GRAVITY_MODIFIER)
+							: (moveUp.isPressed() ? GRAVITY / GRAVITY_MODIFIER
+									: GRAVITY)) * elapsedTime);
+		} else if(creature instanceof Player) {
+			float v = 0;
+			if (moveDown.isPressed()) {
+				v = ((Player)creature).yVelocity;
+			} else if (moveUp.isPressed()) {
+				v = -((Player)creature).yVelocity;
+			} else {
+				v = 0;
+			}
+			creature.setVelocityY(v);
 		}
 
 		// change x
@@ -431,11 +473,13 @@ public class GameManager extends GameCore {
 			creature.collideHorizontal();
 		}
 		if (creature instanceof Player) {
-			//Block Condition effects: horiz
+			// Block Condition effects: horiz
 			if (tile != null) {
 				if (map.getTileInt(tile.x, tile.y) != hori_block_colis)
 					xDet = true;
 				hori_block_colis = map.getTileInt(tile.x, tile.y);
+			} else {
+				hori_block_colis = -1;
 			}
 			checkPlayerCollision((Player) creature, false);
 			if (creature.getHealth() <= 0) {
@@ -464,29 +508,44 @@ public class GameManager extends GameCore {
 			creature.collideVertical();
 		}
 		if (creature instanceof Player) {
-			//Block Condition effects: vert
+			// Block Condition effects: vert
 			if (tile != null) {
 				if (map.getTileInt(tile.x, tile.y) != vert_block_colis)
 					yDet = true;
 				vert_block_colis = map.getTileInt(tile.x, tile.y);
+			} else {
+				vert_block_colis = -1;
 			}
-			
-			//Either Block Condition Effects
-			if (xDet && hori_block_colis == GAS || yDet && vert_block_colis == GAS ) {
-				((Player) creature).incScore(200);
-			}
-			
 
+			// Either Block Condition Effects
+			if (xDet && hori_block_colis == GAS || yDet
+					&& vert_block_colis == GAS) {
+				creature.setBullets(0);
+				bulletTimer = GameCore.timeElapsed;
+
+				//((Player) creature).incScore(200);
+			}
+			if (xDet && hori_block_colis == EXPLODE || yDet
+					&& vert_block_colis == EXPLODE) {
+				if (!map.getHasExploded(tile)) {
+					creature.incrementHealth(-10);
+					map.setHasExploded(tile);
+				}
+
+				//((Player) creature).incScore(300);
+			}
+			
 			xDet = false;
 			yDet = false;
-			long iFrame_dx = ((Player) creature).getTotal_distance_traveled() - ((Player) creature).getiFrameDistance();
-			
+			long iFrame_dx = ((Player) creature).getTotal_distance_traveled()
+					- ((Player) creature).getiFrameDistance();
 
 			if (creature.getDistanceTraveled() > 64) {
 				creature.setDistanceTraveled(0);
 				creature.incrementHealth(1);
 			}
-			if (GameManager.timeElapsed <= ((Player) creature).getiFrameTimer() && iFrame_dx < 0) {
+			if (GameManager.timeElapsed <= ((Player) creature).getiFrameTimer()
+					&& iFrame_dx < 0) {
 				((Player) creature).setInvincible((true));
 			} else {
 				((Player) creature).setInvincible((false));
@@ -502,7 +561,7 @@ public class GameManager extends GameCore {
 			checkProjectileCollision((Projectile) creature, true);
 		}
 		if (creature instanceof Stormtrooper && creature.isAlive()) {
-		
+
 			if (Math.abs(map.getPlayer().getX()
 					- ((Stormtrooper) creature).getX()) < 430.0f) { // checks if
 																	// Stormtrooper
@@ -516,7 +575,7 @@ public class GameManager extends GameCore {
 
 			if (((Stormtrooper) creature).getTimeWithPlayerOnScreen() > 500
 					|| Math.abs(map.getPlayer().getX()
-							- ((Stormtrooper) creature).getX()) < 430.0f-128.0f) {// 1/2
+							- ((Stormtrooper) creature).getX()) < 430.0f - 128.0f) {// 1/2
 				if (GameCore.timeElapsed
 						- ((Stormtrooper) creature).getBulletTimer() > ((Stormtrooper) creature).fireRate
 						|| ((Stormtrooper) creature).getBulletTimer() == 0) {
@@ -525,7 +584,10 @@ public class GameManager extends GameCore {
 					((Projectile) projectileSprite).setIsFriendly(false);
 					projectileSprite.setX((int) creature.getX());
 					projectileSprite.setY((int) creature.getY());
-					projectileSprite.setVelocityX((((Stormtrooper) creature).getBulletSpeed())*(creature.getX()<map.getPlayer().getX() ? 1:-1));
+					projectileSprite.setVelocityX((((Stormtrooper) creature)
+							.getBulletSpeed())
+							* (creature.getX() < map.getPlayer().getX() ? 1
+									: -1));
 					projSprites.add(projectileSprite);
 					((Stormtrooper) creature)
 							.setBulletTimer(GameCore.timeElapsed);
@@ -633,14 +695,16 @@ public class GameManager extends GameCore {
 			// do something here, like give the player points
 			soundManager.play(prizeSound);
 			((Player) map.getPlayer()).incScore(5);
-			((Player) map.getPlayer()).setiFrameTimer(GameManager.timeElapsed+1000);
-			((Player) map.getPlayer()).setiFrameDistance(((Player) map.getPlayer()).getTotal_distance_traveled()+64*10);
+			((Player) map.getPlayer())
+					.setiFrameTimer(GameManager.timeElapsed + 1000);
+			((Player) map.getPlayer()).setiFrameDistance(((Player) map
+					.getPlayer()).getTotal_distance_traveled() + 64 * 10);
 		} else if (powerUp instanceof PowerUp.Music) {
 			// change the music
 			soundManager.play(prizeSound);
 			((Player) map.getPlayer()).incScore(10);
 			((Player) map.getPlayer()).incrementHealth(5);
-			//PLAY MUSHROOM SOUND HERE
+			// PLAY MUSHROOM SOUND HERE
 		} else if (powerUp instanceof PowerUp.Goal) {
 			// advance to next map
 			soundManager.play(prizeSound, new EchoFilter(2000, .7f), false);

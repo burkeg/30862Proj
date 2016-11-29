@@ -1,6 +1,7 @@
 package com.brackeen.javagamebook.tilegame;
 
 import java.awt.Image;
+import java.awt.Point;
 import java.util.LinkedList;
 import java.util.Iterator;
 
@@ -18,6 +19,8 @@ public class TileMap {
     private int[][] tiles_ints;
     private LinkedList sprites;
     private Sprite player;
+	public boolean hasExploded[][];
+
 
     /**
         Creates a new TileMap with the specified width and
@@ -125,5 +128,16 @@ public class TileMap {
     public Iterator getSprites() {
         return sprites.iterator();
     }
+
+
+	public boolean getHasExploded(Point p) {
+		return hasExploded[p.x][p.y];
+	}
+
+
+	public void setHasExploded(Point p) {
+		hasExploded[p.x][p.y] = true;
+	}
+
 
 }
